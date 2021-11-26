@@ -1,6 +1,7 @@
 // Import des packages :
 const mongoose = require('mongoose');
 const express = require('express');
+const path = require('path');
 // Import des logiques de route :
 const userRoutes = require('./routes/user');
 // Connexion à MongoDB Atlas :
@@ -28,9 +29,12 @@ app.use((req, res, next) => {
   );
   next();
 });
-//
+// Rend les données récupérées exploitables :
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Chemin du dossier vers les images :
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Routage :
 app.use('/api/auth', userRoutes);
