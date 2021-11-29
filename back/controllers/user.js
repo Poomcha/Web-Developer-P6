@@ -1,7 +1,7 @@
 // Import des packages :
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+// Import schéma :
 const User = require('../models/User');
 
 // Création d'un nouvel utilisateur :

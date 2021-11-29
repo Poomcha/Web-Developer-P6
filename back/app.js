@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('path');
 // Import des logiques de route :
 const userRoutes = require('./routes/user');
+const sauceRoutes = require('./routes/sauce');
 // Connexion à MongoDB Atlas :
 mongoose
   .connect(
@@ -23,7 +24,7 @@ app.use((req, res, next) => {
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization'
   );
-  express.setHeader(
+  res.setHeader(
     'Access-Control-Allow-Methods',
     'GET, POST, PUT, DELETE, PATCH, OPTIONS'
   );
@@ -38,5 +39,6 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Routage :
 app.use('/api/auth', userRoutes);
+app.use('/api/sauces', sauceRoutes);
 
 module.exports = app;
