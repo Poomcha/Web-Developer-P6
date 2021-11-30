@@ -90,8 +90,48 @@ exports.deleteSauce = (req, res, next) => {
           )
           .catch((error) => res.status(404).json({ error }));
       } else {
-        res.status(401).json({ message: 'Acès non authorisé.' });
+        res.status(401).json({ message: 'Accès non authorisé.' });
       }
     })
     .catch((error) => res.status(404).json({ error }));
+};
+
+exports.likeSauce = (req, res, next) => {
+  Sauce.findOne({ _id: req.params.id })
+    .then((sauce) => {
+      switch (req.body.like) {
+        case 1:
+          // Si l'utilisateur a déjà voté :
+          if (
+            sauce[usersLiked].find((userId) => userId === req.body.userId) ||
+            sauce[usersDisliked].find((userId) => userId === req.body.userId)
+          ) {
+            res.status(200).json({ message: "L'utilisateur a déjà voté." });
+          }
+          // Sinon :
+          else {
+            console.log('Else');
+            // Modification :
+            Sauce.updateOne(
+              { _id: req.params.id },
+              {
+                ...sauce,
+                _id: req.params.id,
+                like: (sauce[likes] += 1),
+                usersDisliked: sauce[usersLiked].push(req.body.userId),
+              }
+            )
+              .then(() => res.status(200).json({ message: 'Like enregistré.' }))
+              .catch((error) => res.status(400).json({ error }));
+          }
+          break;
+        case -1:
+          break;
+        case 0:
+          break;
+        default:
+          res.status(400).json({ message: 'Action non reconnue.' });
+      }
+    })
+    .catch((error) => res.status(404).json({ error: 'Pas normal ça.' }));
 };
