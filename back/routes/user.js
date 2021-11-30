@@ -1,7 +1,7 @@
 // Import des packages :
 const express = require('express');
 const router = express.Router();
-const userCtrl = require('../controllers/user');
+const userCtrl = require('../controlers/user');
 
 // Création des routes :
 router.post('/signup', userCtrl.signup);
