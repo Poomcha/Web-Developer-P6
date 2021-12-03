@@ -13,7 +13,7 @@ const normalizePort = (val) => {
 };
 
 // Configuration du port :
-const port = normalizePort(process.env.PORT);
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
