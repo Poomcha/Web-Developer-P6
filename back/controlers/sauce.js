@@ -1,4 +1,5 @@
 // Import packages :
+const { json } = require('express');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 // Import schéma :
@@ -107,10 +108,68 @@ exports.likeSauce = (req, res, next) => {
     .then((sauce) => {
       switch (req.body.like) {
         case 1:
+          // On vérifie si l'utilisateur a déjà voté :
+          if (
+            sauce.usersLiked.find((user) => user === req.body.userId) ||
+            sauce.usersDisliked.find((user) => user === req.body.userId)
+          ) {
+            // Si oui :
+            res.status(200).json({ message: "L'utilisateur a déjà voté" });
+          } // Sinon :
+          else {
+            sauce.likes += 1;
+            sauce.usersLiked.push(req.body.userId);
+            sauce
+              .save()
+              .then(() => res.status(200).json({ message: 'Like enregistré.' }))
+              .catch((error) => res.status(400).json({ error }));
+          }
           break;
         case -1:
+          if (
+            sauce.usersLiked.find((user) => user === req.body.userId) ||
+            sauce.usersDisliked.find((user) => user === req.body.userId)
+          ) {
+            res.status(200).json({ message: "L'utilisateur a déjà voté" });
+          } else {
+            sauce.dislikes += 1;
+            sauce.usersDisliked.push(req.body.userId);
+            sauce
+              .save()
+              .then(() =>
+                res.status(200).json({ message: 'Dislike enregistré.' })
+              )
+              .catch((error) => res.status(400).json({ error }));
+          }
           break;
         case 0:
+          // L'utilisateur enlève son like :
+          if (sauce.usersLiked.find((user) => user === req.body.userId)) {
+            sauce.likes -= 1;
+            sauce.usersLiked = sauce.usersLiked.filter(
+              (user) => user !== req.body.userId
+            );
+            sauce
+              .save()
+              .then(() => res.status(200).json({ message: 'Like annulé.' }))
+              .catch((error) => res.status(400).json({ error }));
+          } // L'utilisateur enlève son dislike :
+          else if (
+            sauce.usersDisliked.find((user) => user === req.body.userId)
+          ) {
+            sauce.dislikes -= 1;
+            sauce.usersDisliked = sauce.usersDisliked.filter(
+              (user) => user !== req.body.userId
+            );
+            sauce
+              .save()
+              .then(() => res.status(200).json({ message: 'Dislike annulé.' }))
+              .catch((error) =>
+                res.status(400).json({ error: 'Something went wrong' })
+              );
+          } else {
+            res.status(200).json({ message: 'Utilisateur non trouvé.' });
+          }
           break;
         default:
           res.status(400).json({ message: 'Action non reconnue.' });
