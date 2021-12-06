@@ -1,12 +1,11 @@
 // Import packages :
-const { json } = require('express');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 // Import schéma :
 const Sauce = require('../models/Sauce');
 
 // Logique métier :
-exports.createSauce = (req, res, next) => {
+const createSauce = (req, res, next) => {
   const sauceObj = JSON.parse(req.body.sauce);
   const sauce = new Sauce({
     ...sauceObj,
@@ -24,19 +23,18 @@ exports.createSauce = (req, res, next) => {
     .catch((error) => res.status(404).res.json({ error }));
 };
 
-exports.getOneSauce = (req, res, next) => {
+const getOneSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => res.status(200).json(sauce))
     .catch((error) => res.status(404).json({ error }));
 };
 
-exports.getAllSauce = (req, res, next) => {
+const getAllSauce = (req, res, next) => {
   Sauce.find()
     .then((sauces) => res.status(200).json(sauces))
     .catch((error) => res.status(404).json({ error }));
 };
-
-exports.modifySauce = (req, res, next) => {
+const modifySauce = (req, res, next) => {
   // Vérification de l'utilisateur.
   // On récupère l'userId dans la requête :
   const userId = jwt.verify(
@@ -75,7 +73,7 @@ exports.modifySauce = (req, res, next) => {
     .catch((error) => ({ error }));
 };
 
-exports.deleteSauce = (req, res, next) => {
+const deleteSauce = (req, res, next) => {
   const userId = jwt.verify(
     req.headers.authorization.split(' ')[1],
     'TOKEN_SECRET_PHRASE'
@@ -103,7 +101,7 @@ exports.deleteSauce = (req, res, next) => {
     .catch((error) => res.status(404).json({ error }));
 };
 
-exports.likeSauce = (req, res, next) => {
+const likeSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
       switch (req.body.like) {
@@ -176,4 +174,13 @@ exports.likeSauce = (req, res, next) => {
       }
     })
     .catch((error) => res.status(404).json({ error }));
+};
+
+module.exports = {
+  createSauce,
+  getOneSauce,
+  getAllSauce,
+  modifySauce,
+  deleteSauce,
+  likeSauce,
 };

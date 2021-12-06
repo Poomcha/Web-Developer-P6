@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 // Import des logiques de route :
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauce');
@@ -34,6 +35,18 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Création du dossier ./images s'il n'existe pas :
+fs.access('./images', fs.constants.F_OK, (error) => {
+  if (error) {
+    fs.mkdir('./images', (error) => {
+      if (error) {
+        throw error;
+      } else {
+        console.log('Création du dossier ./images.');
+      }
+    });
+  }
+});
 // Chemin du dossier vers les images :
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
