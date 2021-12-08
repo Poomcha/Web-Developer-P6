@@ -162,9 +162,7 @@ const likeSauce = (req, res, next) => {
             sauce
               .save()
               .then(() => res.status(200).json({ message: 'Dislike annulé.' }))
-              .catch((error) =>
-                res.status(400).json({ error: 'Something went wrong' })
-              );
+              .catch((error) => res.status(400).json({ error }));
           } else {
             res.status(200).json({ message: 'Utilisateur non trouvé.' });
           }
